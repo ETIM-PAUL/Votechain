@@ -1,6 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
-import Home from './Home';
-import Dashboard from './Dashboard';
+import { Routes, Route } from "react-router-dom";
+import Home from "./Home";
+import Dashboard from "./Dashboard";
 
 export default function App() {
   return (
