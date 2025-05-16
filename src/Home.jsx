@@ -60,7 +60,7 @@ export default function LandingPage() {
               Launch App
             </button>
           ) : (
-            <UserButton />
+            <UserButton className="bg-white text-blue-900 px-5 py-2 rounded font-semibold hover:bg-gray-200" />
           )}
         </div>
       </nav>

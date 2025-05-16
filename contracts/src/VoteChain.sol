@@ -73,18 +73,20 @@ contract VoteChain {
     }
 
     /**
-     * @dev Creates a new election
+     * @dev Creates a new election and adds candidates
      * @param _title Title of the election
      * @param _description Description of the election
      * @param _startTime Start time of the election (unix timestamp)
      * @param _endTime End time of the election (unix timestamp)
+     * @param _candidateNames Array of candidate names
      * @return electionId ID of the newly created election
      */
     function createElection(
         string memory _title,
         string memory _description,
         uint256 _startTime,
-        uint256 _endTime
+        uint256 _endTime,
+        string[] memory _candidateNames
     ) public returns (uint256 electionId) {
         require(_startTime >= block.timestamp, "Start time must be in the future");
         require(_endTime > _startTime, "End time must be after start time");
@@ -102,57 +104,23 @@ contract VoteChain {
 
         electionCount++;
 
-        emit ElectionCreated(electionId, _title, _startTime, _endTime, msg.sender);
-    }
-
-    /**
-     * @dev Adds a candidate to an election
-     * @param _electionId ID of the election
-     * @param _name Name of the candidate
-     * @return candidateId ID of the added candidate
-     */
-    function addCandidate(
-        uint256 _electionId, 
-        string memory _name
-    ) public electionExists(_electionId) onlyElectionCreator(_electionId) returns (uint256 candidateId) {
-        require(block.timestamp < elections[_electionId].startTime, "Cannot add candidates after election has started");
-        
-        candidateId = elections[_electionId].candidateCount;
-        
-        elections[_electionId].candidates[candidateId] = Candidate({
-            name: _name,
-            voteCount: 0
-        });
-        
-        elections[_electionId].candidateCount++;
-        
-        emit CandidateAdded(_electionId, candidateId, _name);
-    }
-
-    /**
-     * @dev Adds multiple candidates to an election at once
-     * @param _electionId ID of the election
-     * @param _names Array of candidate names
-     */
-    function addMultipleCandidates(
-        uint256 _electionId, 
-        string[] memory _names
-    ) public electionExists(_electionId) onlyElectionCreator(_electionId) {
-        require(block.timestamp < elections[_electionId].startTime, "Cannot add candidates after election has started");
-        
-        for (uint i = 0; i < _names.length; i++) {
-            uint256 candidateId = elections[_electionId].candidateCount;
+        // Add candidates
+        for (uint i = 0; i < _candidateNames.length; i++) {
+            uint256 candidateId = newElection.candidateCount;
             
-            elections[_electionId].candidates[candidateId] = Candidate({
-                name: _names[i],
+            newElection.candidates[candidateId] = Candidate({
+                name: _candidateNames[i],
                 voteCount: 0
             });
             
-            elections[_electionId].candidateCount++;
+            newElection.candidateCount++;
             
-            emit CandidateAdded(_electionId, candidateId, _names[i]);
+            emit CandidateAdded(electionId, candidateId, _candidateNames[i]);
         }
+
+        emit ElectionCreated(electionId, _title, _startTime, _endTime, msg.sender);
     }
+
 
     /**
      * @dev Casts a vote for a candidate in an election
@@ -164,6 +132,7 @@ contract VoteChain {
         uint256 _candidateId
     ) public electionExists(_electionId) electionActive(_electionId) hasNotVoted(_electionId) {
         require(_candidateId < elections[_electionId].candidateCount, "Candidate does not exist");
+        require(block.timestamp >= elections[_electionId].startTime && block.timestamp <= elections[_electionId].endTime, "Election is not active");
         
         elections[_electionId].candidates[_candidateId].voteCount++;
         elections[_electionId].hasVoted[msg.sender] = true;
@@ -198,23 +167,6 @@ contract VoteChain {
             election.creator,
             election.candidateCount
         );
-    }
-
-    /**
-     * @dev Get candidate details
-     * @param _electionId ID of the election
-     * @param _candidateId ID of the candidate
-     * @return name Name of the candidate
-     * @return voteCount Number of votes for the candidate
-     */
-    function getCandidate(
-        uint256 _electionId, 
-        uint256 _candidateId
-    ) public view electionExists(_electionId) returns (string memory name, uint256 voteCount) {
-        require(_candidateId < elections[_electionId].candidateCount, "Candidate does not exist");
-        
-        Candidate storage candidate = elections[_electionId].candidates[_candidateId];
-        return (candidate.name, candidate.voteCount);
     }
 
     /**

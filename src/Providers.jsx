@@ -2,16 +2,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { embeddedWallet } from "@civic/auth-web3/wagmi";
 import { CivicAuthProvider } from "@civic/auth-web3/react";
-import { mainnet, sepolia } from "wagmi/chains";
+import { mainnet, sepolia, optimismSepolia } from "wagmi/chains";
 
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 if (!CLIENT_ID) throw new Error("CLIENT_ID is required");
 
 const wagmiConfig = createConfig({
-  chains: [mainnet, sepolia],
+  chains: [mainnet, sepolia, optimismSepolia],
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
+    [optimismSepolia.id]: http(),
   },
   connectors: [embeddedWallet()],
 });
@@ -25,7 +26,7 @@ export const Providers = ({ children }) => {
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
         <CivicAuthProvider
-          clientId={CLIENT_ID}
+          clientId="23a84303-96a0-4e6f-bdca-ba3b9bd20a84"
           // oauthServer and wallet are not necessary for production.
           // config={{ oauthServer: AUTH_SERVER || 'https://auth.civic.com/oauth'}}
           // endpoints={{ wallet: WALLET_API_BASE_URL }}

@@ -28,12 +28,19 @@ contract VoteChainTest is Test {
         // Start time + 7 days for end time
         uint256 endTime = startTime + 7 days;
 
+        string[] memory candidateNames = new string[](4);
+        candidateNames[0] = "Alice";
+        candidateNames[1] = "Bob";
+        candidateNames[2] = "Charlie";
+        candidateNames[3] = "Dave";
+
         // Create an election
         electionId = votechain.createElection(
             "Presidential DAO Election 2025",
             "A decentralized election to choose the next president of the DAO",
             startTime,
-            endTime
+            endTime,
+            candidateNames
         );
 
         // Verify election was created
@@ -51,36 +58,8 @@ contract VoteChainTest is Test {
         vm.stopPrank();
     }
 
-    function testAddCandidates() public {
-        // First create an election
-        testCreateElection();
-
-        vm.startPrank(alice);
-
-        // Add candidates
-        votechain.addCandidate(electionId, "Alice");
-        votechain.addCandidate(electionId, "Bob");
-
-        // Add multiple candidates at once
-        string[] memory names = new string[](2);
-        names[0] = "Charlie";
-        names[1] = "Dave";
-        votechain.addMultipleCandidates(electionId, names);
-
-        // Verify candidates were added
-        (string[] memory candidateNames, ) = votechain.getAllCandidates(electionId);
-        assertEq(candidateNames.length, 4);
-        assertEq(candidateNames[0], "Alice");
-        assertEq(candidateNames[1], "Bob");
-        assertEq(candidateNames[2], "Charlie");
-        assertEq(candidateNames[3], "Dave");
-
-        vm.stopPrank();
-    }
 
     function testVoting() public {
-        // First add candidates
-        testAddCandidates();
 
         // Warp to election start time
         (, , uint256 startTime, , , ) = votechain.getElectionDetails(electionId);
@@ -127,12 +106,19 @@ contract VoteChainTest is Test {
         // Create two elections
         vm.startPrank(alice);
 
+        string[] memory candidateNames = new string[](4);
+        candidateNames[0] = "Alice";
+        candidateNames[1] = "Bob";
+        candidateNames[2] = "Charlie";
+        candidateNames[3] = "Dave";
+
         // Election 1: Active now
         uint256 election1Id = votechain.createElection(
             "Active Election",
             "This election is active now",
             block.timestamp, // Starts now
-            block.timestamp + 5 days  // Ends in 5 days
+            block.timestamp + 5 days,  // Ends in 5 days
+            candidateNames
         );
 
         // Election 2: Already ended
@@ -140,7 +126,8 @@ contract VoteChainTest is Test {
             "Past Election",
             "This election has ended",
             block.timestamp, // Starts now
-            block.timestamp + 2 days   // Ends in 2 days
+            block.timestamp + 2 days,   // Ends in 2 days
+            candidateNames
         );
 
         vm.stopPrank();
