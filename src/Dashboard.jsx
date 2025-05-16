@@ -33,6 +33,7 @@ function App() {
   const { wallet } = userContext.ethereum;
   console.log("wallet", wallet);
 
+  
   const disconnectWallet = () => {
     disconnect();
     navigate("/");
@@ -68,7 +69,6 @@ function App() {
   };
 
   const voteCandidate = async () => {
-    console.log("Voting for candidate...");
     try {
       setIsLoading(true);
       await wallet.writeContract({
@@ -94,7 +94,7 @@ function App() {
     address: VOTE_ADDRESS,
     abi: VOTE_CHAIN_ABI,
     functionName: 'getActiveElections',
-    chainId: 11155420, // Optimism Sepolia chain ID
+    chainId: 84532, // Base Sepolia chain ID
   });
 
   // Fetch past election IDs
@@ -102,13 +102,13 @@ function App() {
     address: VOTE_ADDRESS,
     abi: VOTE_CHAIN_ABI,
     functionName: 'getPastElections',
-    chainId: 11155420, // Optimism Sepolia chain ID
+    chainId: 84532, // Base Sepolia chain ID
   });
 
   // Utility function to fetch election details
   const fetchElectionDetails = async (id) => {
-    // Create a provider (e.g., using Optimism Sepolia RPC URL)
-    const provider = new ethers.JsonRpcProvider('https://sepolia.optimism.io'); // Replace with your RPC URL
+    // Create a provider (e.g., using Base Sepolia RPC URL)
+    const provider = new ethers.JsonRpcProvider('https://base-sepolia.g.alchemy.com/v2/'); // Replace with your RPC URL
 
     // Create a contract instance
     const contract = new ethers.Contract(VOTE_ADDRESS, VOTE_CHAIN_ABI, provider);
