@@ -45,7 +45,7 @@ function App() {
     const endTime = Math.floor(new Date(electionEndDate).getTime() / 1000);
     try {
       setIsLoading(true);
-      const receipt = await wallet.writeContract({
+      let receipt = await wallet.writeContract({
         address: VOTE_ADDRESS,
         abi: VOTE_CHAIN_ABI,
         functionName: 'createElection',
@@ -72,7 +72,7 @@ function App() {
   const voteCandidate = async () => {
     try {
       setIsLoading(true);
-      const receipt = await wallet.writeContract({
+      let receipt = await wallet.writeContract({
         address: VOTE_ADDRESS,
         abi: VOTE_CHAIN_ABI,
         functionName: 'vote',
