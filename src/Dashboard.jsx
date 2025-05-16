@@ -20,6 +20,8 @@ function App() {
   const [newElectionModal, setNewElectionModal] = useState(false);
   const [selectedElection, setSelectedElection] = useState(null);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [selectedCandidateId, setSelectedCandidateId] = useState(null);
+  const [selectedElectionId, setSelectedElectionId] = useState(null);
   const [activeElections, setActiveElections] = useState([]);
   const [pastElections, setPastElections] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +39,6 @@ function App() {
   };
 
   const createNewElection = async () => {
-    console.log("Creating new election...");
     const candidatesArray = electionCandidates.split(",").map(name => name.trim());
     const startTime = Math.floor(new Date(electionStartDate).getTime() / 1000);
     const endTime = Math.floor(new Date(electionEndDate).getTime() / 1000);
@@ -62,6 +63,28 @@ function App() {
     } catch (error) {
       toast.error(error.reason);
       console.error("Error creating new election:", error);
+      setIsLoading(false);
+    }
+  };
+
+  const voteCandidate = async () => {
+    console.log("Voting for candidate...");
+    try {
+      setIsLoading(true);
+      await wallet.writeContract({
+        address: VOTE_ADDRESS,
+        abi: VOTE_CHAIN_ABI,
+        functionName: 'vote',
+        args: [Number(selectedElectionId), Number(selectedCandidateId)],
+      });
+      fetchActiveElections();
+      toast.success("Vote cast successfully");
+      setSelectedCandidate(null);
+      fetchActiveElections(true);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error(error.reason);
+      console.error("Error casting vote:", error);
       setIsLoading(false);
     }
   };
@@ -178,7 +201,7 @@ function App() {
             </button>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeElections.map((election) => (
+            {activeElections.map((election, index) => (
               <div key={election.id} className="bg-white p-4 rounded-lg shadow">
                 <h3 className="text-lg text-blue-900 font-bold mb-2">
                   {election[0]}
@@ -192,6 +215,7 @@ function App() {
                     onClick={() => {
                       setElectionDetailsModal(true);
                       setSelectedElection(election);
+                      setSelectedElectionId(index);
                     }}
                   >
                     <FaVoteYea /> Vote
@@ -259,10 +283,9 @@ function App() {
                     Close
                   </button>
                   <button
-                    onClick={() => {
-                      setSelectedCandidate(null);
-                      setElectionDetailsModal(true);
-                    }}
+                    onClick={() => 
+                      voteCandidate()
+                    }
                     className="bg-blue-800 cursor-pointer rounded-md text-white px-4 py-2 hover:bg-blue-900"
                   >
                     Vote
@@ -359,7 +382,7 @@ function App() {
                       }}
                       className="bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md text-white px-4 py-2 hover:bg-blue-900"
                     >
-                      Create Election
+                      {isLoading ? "Creating..." : "Create Election"}
                     </button>
                   </div>
                 </div>
@@ -449,6 +472,7 @@ function App() {
                     <button
                       onClick={() => {
                         setSelectedCandidate(candidate);
+                        setSelectedCandidateId(index);
                         setElectionDetailsModal(false);
                       }}
                       className="bg-blue-900 cursor-pointer text-white text-sm px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"

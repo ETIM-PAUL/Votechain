@@ -8,10 +8,8 @@ const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 if (!CLIENT_ID) throw new Error("CLIENT_ID is required");
 
 const wagmiConfig = createConfig({
-  chains: [mainnet, sepolia, optimismSepolia],
+  chains: [optimismSepolia],
   transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
     [optimismSepolia.id]: http(),
   },
   connectors: [embeddedWallet()],
@@ -26,6 +24,7 @@ export const Providers = ({ children }) => {
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
         <CivicAuthProvider
+          chains={[optimismSepolia]}
           clientId="23a84303-96a0-4e6f-bdca-ba3b9bd20a84"
           // oauthServer and wallet are not necessary for production.
           // config={{ oauthServer: AUTH_SERVER || 'https://auth.civic.com/oauth'}}
