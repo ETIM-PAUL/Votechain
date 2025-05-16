@@ -45,14 +45,14 @@ function App() {
     const endTime = Math.floor(new Date(electionEndDate).getTime() / 1000);
     try {
       setIsLoading(true);
-      let receipt = await wallet.writeContract({
+      const hash = await wallet.writeContract({
         address: VOTE_ADDRESS,
         abi: VOTE_CHAIN_ABI,
         functionName: 'createElection',
         args: [electionTitle, electionDescription, startTime, endTime, candidatesArray],
       });
 
-       receipt = await publicClient.waitForTransactionReceipt({ hash });
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
       fetchActiveElections();
       toast.success("Election created successfully");
       setElectionTitle("");
@@ -72,13 +72,13 @@ function App() {
   const voteCandidate = async () => {
     try {
       setIsLoading(true);
-      let receipt = await wallet.writeContract({
+      let hash = await wallet.writeContract({
         address: VOTE_ADDRESS,
         abi: VOTE_CHAIN_ABI,
         functionName: 'vote',
         args: [Number(selectedElectionId), Number(selectedCandidateId)],
       });
-      receipt = await publicClient.waitForTransactionReceipt({ hash });
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
       fetchActiveElections();
       toast.success("Vote cast successfully");
       setSelectedCandidate(null);
