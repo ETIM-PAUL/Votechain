@@ -285,7 +285,7 @@ function App() {
                 <h2 className="text-2xl font-bold mb-6 text-center">
                   Create a New Election
                 </h2>
-                <form className="space-y-6">
+                <div className="space-y-6">
                   <div>
                     <label className="block font-semibold mb-2">
                       Election Title
@@ -362,7 +362,7 @@ function App() {
                       Create Election
                     </button>
                   </div>
-                </form>
+                </div>
               </div>
             </section>
           </div>
