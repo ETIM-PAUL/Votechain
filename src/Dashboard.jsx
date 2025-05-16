@@ -28,6 +28,8 @@ function App() {
   const [electionStartDate, setElectionStartDate] = useState("");
   const [electionEndDate, setElectionEndDate] = useState("");
   const [electionCandidates, setElectionCandidates] = useState([]);
+  const { wallet } = userContext.ethereum;
+  console.log("wallet", wallet);
 
   const disconnectWallet = () => {
     disconnect();
@@ -39,14 +41,14 @@ function App() {
     const candidatesArray = electionCandidates.split(",").map(name => name.trim());
     const startTime = Math.floor(new Date(electionStartDate).getTime() / 1000);
     const endTime = Math.floor(new Date(electionEndDate).getTime() / 1000);
-    console.log(candidatesArray);
     try {
       setIsLoading(true);
-      const provider = new ethers.JsonRpcProvider('https://sepolia.optimism.io'); // Replace with your RPC URL
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(VOTE_ADDRESS, VOTE_CHAIN_ABI, signer);
-      const tx = await contract.createElection(electionTitle, electionDescription, startTime, endTime, candidatesArray);
-      await tx.wait();
+      await wallet.writeContract({
+        address: VOTE_ADDRESS,
+        abi: VOTE_CHAIN_ABI,
+        functionName: 'createElection',
+        args: [electionTitle, electionDescription, startTime, endTime, candidatesArray],
+      });
       fetchActiveElections();
       toast.success("Election created successfully");
       console.log(tx);
@@ -127,7 +129,7 @@ function App() {
     }
   }, [pastElectionIds]);
 
-  console.log(activeElections);
+
   return (
     <div className="min-h-screen w-full bg-gray-100">
       {/* Navbar */}

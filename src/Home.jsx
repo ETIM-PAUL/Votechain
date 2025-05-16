@@ -50,18 +50,19 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className="flex justify-between items-center px-6 py-4">
         <h1 className="text-2xl font-extrabold tracking-wide">VoteChain</h1>
-        <div className="space-x-4">
+        <div className="space-x-4 flex items-center">
           {userContext.authStatus === AuthStatus.AUTHENTICATED &&
-          userContext.user ? (
+          userContext.user && (
             <button
               onClick={connectWalletAndLaunchApp}
               className="bg-white text-blue-900 px-5 py-2 rounded font-semibold hover:bg-gray-200"
             >
               Launch App
             </button>
-          ) : (
-            <UserButton className="bg-white text-blue-900 px-5 py-2 rounded font-semibold hover:bg-gray-200" />
           )}
+
+            <UserButton className="bg-white text-blue-900 px-5 py-2 rounded font-semibold hover:bg-gray-200" />
+          
         </div>
       </nav>
 
