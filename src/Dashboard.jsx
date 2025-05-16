@@ -45,15 +45,16 @@ function App() {
     const endTime = Math.floor(new Date(electionEndDate).getTime() / 1000);
     try {
       setIsLoading(true);
-      await wallet.writeContract({
+      const receipt = await wallet.writeContract({
         address: VOTE_ADDRESS,
         abi: VOTE_CHAIN_ABI,
         functionName: 'createElection',
         args: [electionTitle, electionDescription, startTime, endTime, candidatesArray],
       });
+
+       receipt = await publicClient.waitForTransactionReceipt({ hash });
       fetchActiveElections();
       toast.success("Election created successfully");
-      console.log(tx);
       setElectionTitle("");
       setElectionDescription("");
       setElectionStartDate("");
@@ -62,7 +63,7 @@ function App() {
       setNewElectionModal(false);
       setIsLoading(false);
     } catch (error) {
-      toast.error(error.reason);
+      toast.error(error.message);
       console.error("Error creating new election:", error);
       setIsLoading(false);
     }
@@ -71,19 +72,20 @@ function App() {
   const voteCandidate = async () => {
     try {
       setIsLoading(true);
-      await wallet.writeContract({
+      const receipt = await wallet.writeContract({
         address: VOTE_ADDRESS,
         abi: VOTE_CHAIN_ABI,
         functionName: 'vote',
         args: [Number(selectedElectionId), Number(selectedCandidateId)],
       });
+      receipt = await publicClient.waitForTransactionReceipt({ hash });
       fetchActiveElections();
       toast.success("Vote cast successfully");
       setSelectedCandidate(null);
       fetchActiveElections(true);
       setIsLoading(false);
     } catch (error) {
-      toast.error(error.reason);
+      toast.error(error.message);
       console.error("Error casting vote:", error);
       setIsLoading(false);
     }
