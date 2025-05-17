@@ -9,6 +9,8 @@ import { useReadContract, useAccount, useDisconnect } from 'wagmi';
 import { VOTE_ADDRESS, VOTE_CHAIN_ABI } from './utils';
 import { ethers } from 'ethers';
 import { toast } from 'react-toastify';
+import { createPublicClient, http } from 'viem';
+import { baseSepolia } from 'wagmi/chains';
 
 function App() {
   const userContext = useUser();
@@ -33,6 +35,10 @@ function App() {
   const { wallet } = userContext.ethereum;
   console.log("wallet", wallet);
 
+  const publicClient = createPublicClient({
+    chain: baseSepolia, // choose your chain
+    transport: http(), // optional: pass a custom RPC endpoint like http('https://...')
+  });
   
   const disconnectWallet = () => {
     disconnect();
@@ -202,6 +208,7 @@ function App() {
               <span>New Election</span>
             </button>
           </div>
+          {activeElections.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {activeElections.map((election, index) => (
               <div key={election.id} className="bg-white p-4 rounded-lg shadow">
@@ -226,6 +233,9 @@ function App() {
               </div>
             ))}
           </div>
+          ) : (
+            <p className="text-gray-600">No active elections yet.</p>
+          )}
         </div>
 
         <div className="mt-20">
