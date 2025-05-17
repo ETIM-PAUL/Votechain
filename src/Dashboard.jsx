@@ -47,6 +47,14 @@ function App() {
   };
 
   const createNewElection = async () => {
+    if(electionTitle === "" || electionDescription === "" || electionStartDate === "" || electionEndDate === "" || electionCandidates === "") {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    if(electionStartDate >= electionEndDate) {
+      toast.error("Start date must be before end date");
+      return;
+    }
     const candidatesArray = electionCandidates.split(",").map(name => name.trim());
     const startTime = Math.floor(new Date(electionStartDate).getTime() / 1000);
     const endTime = Math.floor(new Date(electionEndDate).getTime() / 1000);
@@ -61,6 +69,7 @@ function App() {
 
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       fetchActiveElections();
+      fetchUpcomingElections();
       toast.success("Election created successfully");
       setElectionTitle("");
       setElectionDescription("");
