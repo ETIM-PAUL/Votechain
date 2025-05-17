@@ -1,6 +1,7 @@
 # VoteChain
 
 Live Site - https://votechain-iota.vercel.app/
+Demo - https://www.loom.com/share/a14f3ab963c14cff84b7eaaf091eae6e
 
 VoteChain is a decentralized voting system built on blockchain technology, enabling secure, transparent, and tamper-proof elections. It allows users login using Civic Auth (through their social media) to create elections, add candidates, and cast votes in a trustless environment. The project leverages smart contracts on the Base Sepolia testnet and integrates with Civic for wallet authentication.
 

@@ -343,19 +343,21 @@ function App() {
                 </p>
                 <div className="text-center flex justify-end gap-3">
                   <button
+                    disabled={isLoading}
                     onClick={() => {
                       setSelectedCandidate(null);
                       setElectionDetailsModal(true);
                     }}
-                    className="bg-white border border-black cursor-pointer rounded-md text-black hover:bg-gray-500 hover:text-white px-4 py-2"
+                    className="bg-white border border-black disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md text-black hover:bg-gray-500 hover:text-white px-4 py-2"
                   >
                     Close
                   </button>
                   <button
+                    disabled={isLoading}
                     onClick={() => 
                       voteCandidate()
                     }
-                    className="bg-blue-800 cursor-pointer rounded-md text-white px-4 py-2 hover:bg-blue-900"
+                    className="bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-md text-white px-4 py-2 hover:bg-blue-900"
                   >
                     Vote
                   </button>
@@ -446,6 +448,7 @@ function App() {
                       Close Election
                     </button>
                     <button 
+                      disabled={isLoading}
                       onClick={() => {
                         createNewElection();
                       }}
