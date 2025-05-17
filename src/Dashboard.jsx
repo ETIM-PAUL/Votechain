@@ -25,6 +25,7 @@ function App() {
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [selectedElectionId, setSelectedElectionId] = useState(null);
   const [activeElections, setActiveElections] = useState([]);
+  const [upcomingElections, setUpcomingElections] = useState([]);
   const [pastElections, setPastElections] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [electionTitle, setElectionTitle] = useState("");
@@ -105,6 +106,14 @@ function App() {
     chainId: 84532, // Base Sepolia chain ID
   });
 
+  // Fetch upcoming election IDs
+  const { data: upcomingElectionIds, error: upcomingElectionError } = useReadContract({
+    address: VOTE_ADDRESS,
+    abi: VOTE_CHAIN_ABI,
+    functionName: 'getUpcomingElections',
+    chainId: 84532, // Base Sepolia chain ID
+  });
+
   // Fetch past election IDs
   const { data: pastElectionIds, error: pastElectionError } = useReadContract({
     address: VOTE_ADDRESS,
@@ -134,6 +143,13 @@ function App() {
     );
     setActiveElections(activeElectionsData);
   };
+  // Fetch details for upcoming elections
+  const fetchUpcomingElections = async () => {
+    const upcomingElectionsData = await Promise.all(
+      upcomingElectionIds.map((id) => fetchElectionDetails(id))
+    );
+    setUpcomingElections(upcomingElectionsData);
+  };
 
   useEffect(() => {
     if (activeElectionIds) {
@@ -143,6 +159,16 @@ function App() {
       setActiveElections([]); // Set to an empty array if no data
     }
   }, [activeElectionIds]);
+
+  useEffect(() => {
+    if (upcomingElectionIds) {
+      fetchUpcomingElections();
+    } else {
+      console.log('No upcoming elections found.');
+      setActiveElections([]); // Set to an empty array if no data
+    }
+  }, [upcomingElectionIds]);
+
 
   // Fetch details for past elections
   useEffect(() => {
@@ -235,6 +261,28 @@ function App() {
           </div>
           ) : (
             <p className="text-gray-600">No active elections yet.</p>
+          )}
+        </div>
+
+        <div className="mt-20">
+          <h2 className="text-2xl font-semibold mb-4 text-blue-900">
+            Upcoming Elections
+          </h2>
+          {upcomingElections.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingElections.map((election) => (
+                <div key={election.id} className="bg-white p-4 rounded-lg shadow">
+                  <h3 className="text-lg font-bold mb-2 text-blue-900">
+                    {election[0]}
+                  </h3>
+                  <p className="mb-4 text-sm text-gray-600">
+                    {election[1]}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">No upcoming elections found.</p>
           )}
         </div>
 
