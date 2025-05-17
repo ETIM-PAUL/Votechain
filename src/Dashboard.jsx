@@ -134,7 +134,7 @@ function App() {
   // Utility function to fetch election details
   const fetchElectionDetails = async (id) => {
     // Create a provider (e.g., using Base Sepolia RPC URL)
-    const provider = new ethers.JsonRpcProvider('https://base-sepolia.g.alchemy.com/v2/'); // Replace with your RPC URL
+    const provider = new ethers.JsonRpcProvider('https://base-sepolia.drpc.org'); // Replace with your RPC URL
 
     // Create a contract instance
     const contract = new ethers.Contract(VOTE_ADDRESS, VOTE_CHAIN_ABI, provider);
